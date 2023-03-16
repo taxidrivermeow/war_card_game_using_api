@@ -1,38 +1,109 @@
-.App {
-  text-align: center;
+* {
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto', sans-serif;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.wrapper {
+  width: 500px;
+  height: 500px;
+  border: 3px solid green;
+  margin: 50px auto;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.wrapper .login-page {
+  height: 80%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  justify-content: space-evenly;
 }
 
-.App-link {
-  color: #61dafb;
+.login-page .title {
+  color: darkslateblue;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.login-page .name-input {
+  border: 2px solid green;
+  width: 200px;
+  height: 50px;
+  font-size: 25px;
+  padding: 3px 10px;
+}
+
+.login-page .start-btn {
+  background-color: #5841e0;
+  color: antiquewhite;
+  font-size: 25px;
+  border-radius: 5px;
+  width: 175px;
+  height: 50px;
+  cursor: pointer;
+}
+
+.login-page .start-btn:active {
+  background-color: #7660f1;
+  color: #696262;
+}
+
+.wrapper .game {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.game .playerName {
+  color: darkslateblue;
+}
+
+.game .next-btn {
+  background-color: #5841e0;
+  color: antiquewhite;
+  font-size: 25px;
+  border-radius: 5px;
+  width: 175px;
+  height: 50px;
+  cursor: pointer;
+}
+
+.game .playerName:active {
+  background-color: #7660f1;
+  color: #696262;
+}
+
+.game .card {
+  width: 100px;
+  height: 166px;
+  background-color: gray;
+  border: 1px solid black;
+  border-radius: 5px;
+}
+
+.wrapper .results {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.results .score {
+  color: darkslateblue;
+}
+
+.results .again-btn {
+  background-color: #5841e0;
+  color: antiquewhite;
+  font-size: 25px;
+  border-radius: 5px;
+  width: 175px;
+  height: 50px;
+  cursor: pointer;
+}
+
+.results .again-btn:active {
+  background-color: #7660f1;
+  color: #696262;
 }
