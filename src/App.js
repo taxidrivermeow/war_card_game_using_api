@@ -11,17 +11,39 @@ class App extends Component {
         this.state = {
             userName: null,
             currentWinner: 'Draw',
+            currentPage: loginPage,
+            lastScore: null,
             fullScore: {
                 computer: 0,
                 user: 0,
             },
-            currentPage: loginPage,
         }
     }
 
-    changeFullScore = winner => {
-        this.setState({...this.state, currentWinner: winner});
-        // this.changePage(resultsPage);
+    gameOver = (winner, lastScore) => {
+        let winnerName;
+        let computerScore = this.state.fullScore.computer;
+        let userScore = this.state.fullScore.user;
+        if (winner === 'user') {
+            winnerName = this.state.userName;
+            userScore++;
+        } else if (winner === 'computer') {
+            winnerName = 'Computer';
+            computerScore++;
+        } else {
+            winnerName = 'Draw';
+        }
+
+        this.setState({
+            ...this.state,
+            currentWinner: winnerName,
+            currentPage: resultsPage,
+            lastScore: lastScore,
+            fullScore: {
+                computer: computerScore,
+                user: userScore,
+            },
+        });
     }
 
     changePage = page => {
@@ -39,16 +61,17 @@ class App extends Component {
     }
 
     render() {
-        console.log(this.state);
         return (
             <div className={'wrapper'}>
                 {(this.state.currentPage === gamePage) ? <GamePage userName={this.state.userName}
                                                                    changePage={this.changePage}
-                                                                   changeFullScore={this.changeFullScore}
+                                                                   gameOver={this.gameOver}
                     /> :
                     (this.state.currentPage === resultsPage) ? <ResultsPage userName={this.state.userName}
                                                                             changePage={this.changePage}
                                                                             fullScore={this.state.fullScore}
+                                                                            currentWinner={this.state.currentWinner}
+                                                                            lastScore={this.state.lastScore}
                         /> : <LoginPage setName={this.setName}
                                         checkName={this.checkName}
                     />}

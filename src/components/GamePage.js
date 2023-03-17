@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
-import {allCards, resultsPage, results} from "../utils/constants";
+import {allCards, results} from "../utils/constants";
 
 class GamePage extends Component {
     constructor(props) {
         super(props);
+        this.deck = [...allCards];
         this.state = {
             button: 'Next',
             score: {
@@ -19,7 +20,6 @@ class GamePage extends Component {
                 user: null,
             }
         }
-        this.deck = [...allCards];
     }
 
     shuffleDeck = () => {
@@ -42,12 +42,20 @@ class GamePage extends Component {
 
     nextStep = () => {
         if (this.state.button === results) {
-            if (this.state.score.user > this.state.score.computer) {
-                this.props.changeFullScore('user');
-            } else if (this.state.score.user < this.state.score.computer) {
-                this.props.changeFullScore('computer');
+            let winner;
+            const currentScoreComputer = this.state.score.computer;
+            const currentScoreUser = this.state.score.user;
+            const score = `${currentScoreComputer} : ${currentScoreUser}`;
+
+            if (currentScoreUser > currentScoreComputer) {
+                winner = 'user';
+            } else if (currentScoreUser < currentScoreComputer) {
+                winner = 'computer';
+            } else {
+                winner = 'draw'
             }
-            // this.props.changePage(resultsPage);
+
+            this.props.gameOver(winner, score);
         } else {
             const currentComputerCard = Number(this.state.decks.computer.splice(0, 1));
             const currentUserCard = Number(this.state.decks.user.splice(0, 1));
@@ -80,11 +88,6 @@ class GamePage extends Component {
         }
     }
 
-    componentDidMount() {
-        this.shuffleDeck();
-        this.divideDeck();
-    }
-
     render() {
         return (
             <div className="game">
@@ -98,6 +101,29 @@ class GamePage extends Component {
                 </button>
             </div>
         );
+    }
+
+    componentDidMount() {
+        this.shuffleDeck();
+        this.divideDeck();
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        // if (this.state.decks.computer.length === 0 || this.state.decks.user.length === 0) {
+        //     let winner;
+        //     const currentScoreComputer = this.state.score.computer;
+        //     const currentScoreUser = this.state.score.user;
+        //     const score = `${currentScoreComputer} : ${currentScoreUser}`;
+        //     if (currentScoreUser > currentScoreComputer) {
+        //         winner = 'user';
+        //     } else if (currentScoreUser < currentScoreComputer) {
+        //         winner = 'computer';
+        //     } else {
+        //         winner = 'draw'
+        //     }
+        //
+        //     this.props.changeScore(winner, score);
+        // }
     }
 }
 
