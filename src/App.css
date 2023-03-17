@@ -74,11 +74,8 @@
 }
 
 .game .card {
-  width: 100px;
-  height: 166px;
-  background-color: gray;
-  border: 1px solid black;
-  border-radius: 5px;
+  width: 120px;
+  height: 170px;
 }
 
 .wrapper .results {

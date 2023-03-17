@@ -16,8 +16,8 @@ class GamePage extends Component {
                 user: [],
             },
             currentCard: {
-                computer: null,
-                user: null,
+                computer: 'back',
+                user: 'back',
             }
         }
     }
@@ -40,6 +40,55 @@ class GamePage extends Component {
         });
     }
 
+    checkCardValue = card => {
+        let value;
+        switch (card[0][0]) {
+            case '2':
+                value = 2;
+                break;
+            case '3':
+                value = 3;
+                break;
+            case '4':
+                value = 4;
+                break;
+            case '5':
+                value = 5;
+                break;
+            case '6':
+                value = 6;
+                break;
+            case '7':
+                value = 7;
+                break;
+            case '8':
+                value = 8;
+                break;
+            case '9':
+                value = 9;
+                break;
+            case '0':
+                value = 10;
+                break;
+            case 'J':
+                value = 11;
+                break;
+            case 'Q':
+                value = 12;
+                break;
+            case 'K':
+                value = 13;
+                break;
+            case 'A':
+                value = 14;
+                break;
+            default:
+                value = 'unknown value';
+        }
+
+        return value;
+    }
+
     nextStep = () => {
         if (this.state.button === results) {
             let winner;
@@ -57,8 +106,11 @@ class GamePage extends Component {
 
             this.props.gameOver(winner, score);
         } else {
-            const currentComputerCard = Number(this.state.decks.computer.splice(0, 1));
-            const currentUserCard = Number(this.state.decks.user.splice(0, 1));
+            const currentComputerCardCode = this.state.decks.computer.splice(0, 1);
+            const currentUserCardCode = this.state.decks.user.splice(0, 1);
+            const currentComputerCard = this.checkCardValue(currentComputerCardCode);
+            const currentUserCard = this.checkCardValue(currentUserCardCode);
+
             let currentScoreComputer = this.state.score.computer;
             let currentScoreUser = this.state.score.user;
 
@@ -71,8 +123,8 @@ class GamePage extends Component {
             let result = {
                 ...this.state,
                 currentCard: {
-                    computer: currentComputerCard,
-                    user: currentUserCard,
+                    computer: currentComputerCardCode,
+                    user: currentUserCardCode,
                 },
                 score: {
                     computer: currentScoreComputer,
@@ -92,8 +144,8 @@ class GamePage extends Component {
         return (
             <div className="game">
                 <h1 className="playerName">Computer: {this.state.score.computer}</h1>
-                <div className="card">{this.state.currentCard.computer}</div>
-                <div className="card">{this.state.currentCard.user}</div>
+                <img className="card" src={require(`../img/${this.state.currentCard.computer}.png`)} alt={'card'}/>
+                <img className="card" src={require(`../img/${this.state.currentCard.user}.png`)} alt={'card'}/>
                 <h1 className="playerName">{this.props.userName}: {this.state.score.user}</h1>
                 <button className="next-btn"
                         onClick={this.nextStep}
@@ -106,24 +158,6 @@ class GamePage extends Component {
     componentDidMount() {
         this.shuffleDeck();
         this.divideDeck();
-    }
-
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        // if (this.state.decks.computer.length === 0 || this.state.decks.user.length === 0) {
-        //     let winner;
-        //     const currentScoreComputer = this.state.score.computer;
-        //     const currentScoreUser = this.state.score.user;
-        //     const score = `${currentScoreComputer} : ${currentScoreUser}`;
-        //     if (currentScoreUser > currentScoreComputer) {
-        //         winner = 'user';
-        //     } else if (currentScoreUser < currentScoreComputer) {
-        //         winner = 'computer';
-        //     } else {
-        //         winner = 'draw'
-        //     }
-        //
-        //     this.props.changeScore(winner, score);
-        // }
     }
 }
 
