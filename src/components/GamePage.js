@@ -1,10 +1,11 @@
 import React, {Component} from 'react';
-import {allCards} from "../utils/constants";
+import {allCards, resultsPage, results} from "../utils/constants";
 
 class GamePage extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            button: 'Next',
             score: {
                 computer: 0,
                 user: 0,
@@ -18,7 +19,7 @@ class GamePage extends Component {
                 user: null,
             }
         }
-        this.deck = allCards;
+        this.deck = [...allCards];
     }
 
     shuffleDeck = () => {
@@ -39,37 +40,49 @@ class GamePage extends Component {
         });
     }
 
+    nextStep = () => {
+        if (this.state.button === results) {
+            if (this.state.score.user > this.state.score.computer) {
+                this.props.changeFullScore('user');
+            } else if (this.state.score.user < this.state.score.computer) {
+                this.props.changeFullScore('computer');
+            }
+            // this.props.changePage(resultsPage);
+        } else {
+            const currentComputerCard = Number(this.state.decks.computer.splice(0, 1));
+            const currentUserCard = Number(this.state.decks.user.splice(0, 1));
+            let currentScoreComputer = this.state.score.computer;
+            let currentScoreUser = this.state.score.user;
+
+            if (currentComputerCard > currentUserCard) {
+                currentScoreComputer++;
+            } else if (currentComputerCard < currentUserCard) {
+                currentScoreUser++;
+            }
+
+            let result = {
+                ...this.state,
+                currentCard: {
+                    computer: currentComputerCard,
+                    user: currentUserCard,
+                },
+                score: {
+                    computer: currentScoreComputer,
+                    user: currentScoreUser,
+                },
+            }
+
+            if (this.state.decks.computer.length === 0 || this.state.decks.user.length === 0) {
+                result.button = results;
+            }
+
+            this.setState(result);
+        }
+    }
+
     componentDidMount() {
         this.shuffleDeck();
         this.divideDeck();
-    }
-
-    nextStep = () => {
-        const currentComputerCard = Number(this.state.decks.computer.splice(0, 1));
-        const currentUserCard = Number(this.state.decks.user.splice(0, 1));
-        let currentScoreComputer = this.state.score.computer;
-        let currentScoreUser = this.state.score.user;
-
-        if (currentComputerCard > currentUserCard) {
-            currentScoreComputer++;
-        } else if (currentComputerCard < currentUserCard) {
-            currentScoreUser++;
-        }
-
-        console.log(`C:  ${this.state.score.computer}`);
-        console.log(`U:  ${this.state.score.user}`);
-
-        this.setState({
-            ...this.state,
-            currentCard: {
-                computer: currentComputerCard,
-                user: currentUserCard,
-            },
-            score: {
-                computer: currentScoreComputer,
-                user: currentScoreUser,
-            },
-        });
     }
 
     render() {
@@ -81,7 +94,7 @@ class GamePage extends Component {
                 <h1 className="playerName">{this.props.userName}: {this.state.score.user}</h1>
                 <button className="next-btn"
                         onClick={this.nextStep}
-                >Next
+                >{this.state.button}
                 </button>
             </div>
         );

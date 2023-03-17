@@ -1,6 +1,7 @@
 export const loginPage = 'loginPage';
 export const gamePage = 'gamePage';
-export const resultPage = 'resultPage';
+export const resultsPage = 'resultsPage';
+export const results = 'Results';
 export const allCards = [
                          2, 2, 2, 2,
                          3, 3, 3, 3,
@@ -14,5 +15,5 @@ export const allCards = [
                          11, 11, 11, 11, // Jack
                          12, 12, 12, 12, // Queen
                          13, 13, 13, 13, // King
-                         14, 14, 14, 14 // Ace
+                         14, 14, 14, 14  // Ace
                         ];
