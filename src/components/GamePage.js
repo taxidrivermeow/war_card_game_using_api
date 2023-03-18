@@ -94,7 +94,7 @@ class GamePage extends Component {
             let winner;
             const currentScoreComputer = this.state.score.computer;
             const currentScoreUser = this.state.score.user;
-            const score = `${currentScoreComputer} : ${currentScoreUser}`;
+            const score = `${currentScoreComputer} - ${currentScoreUser}`;
 
             if (currentScoreUser > currentScoreComputer) {
                 winner = 'user';
