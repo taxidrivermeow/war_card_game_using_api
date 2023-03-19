@@ -43,7 +43,6 @@ class GamePage extends Component {
                 loadingCards: true,
             });
             const currentDeckState = await Api.getNewCardPair(this.deck);
-            console.log(currentDeckState);
             const [currentComputerCardCode, currentUserCardCode, remaining] = currentDeckState;
             const currentComputerCard = Card.checkValue(currentComputerCardCode);
             const currentUserCard = Card.checkValue(currentUserCardCode);
