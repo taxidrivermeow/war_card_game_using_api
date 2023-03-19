@@ -1,19 +1,18 @@
 import React, {Component} from 'react';
-import {allCards, results} from "../utils/constants";
+import {results} from "../utils/constants";
+import Api from "../utils/Api";
+import Card from "../utils/Card";
 
 class GamePage extends Component {
     constructor(props) {
         super(props);
-        this.deck = [...allCards];
+        this.deck = ''
         this.state = {
             button: 'Next',
+            loadingCards: false,
             score: {
                 computer: 0,
                 user: 0,
-            },
-            decks: {
-                computer: [],
-                user: [],
             },
             currentCard: {
                 computer: 'back',
@@ -22,74 +21,7 @@ class GamePage extends Component {
         }
     }
 
-    shuffleDeck = () => {
-        for (let i = this.deck.length - 1; i > 0; i--) {
-            let j = Math.floor(Math.random() * (i + 1));
-            [this.deck[i], this.deck[j]] = [this.deck[j], this.deck[i]];
-        }
-    }
-
-    divideDeck = () => {
-        const computerDeck = this.deck.splice(0, 26);
-        const userDeck = this.deck;
-        this.setState({
-            ...this.state, decks: {
-                computer: computerDeck,
-                user: userDeck
-            }
-        });
-    }
-
-    checkCardValue = card => {
-        let value;
-        switch (card[0][0]) {
-            case '2':
-                value = 2;
-                break;
-            case '3':
-                value = 3;
-                break;
-            case '4':
-                value = 4;
-                break;
-            case '5':
-                value = 5;
-                break;
-            case '6':
-                value = 6;
-                break;
-            case '7':
-                value = 7;
-                break;
-            case '8':
-                value = 8;
-                break;
-            case '9':
-                value = 9;
-                break;
-            case '0':
-                value = 10;
-                break;
-            case 'J':
-                value = 11;
-                break;
-            case 'Q':
-                value = 12;
-                break;
-            case 'K':
-                value = 13;
-                break;
-            case 'A':
-                value = 14;
-                break;
-            default:
-                value = 'unknown value';
-        }
-
-        return value;
-    }
-
-    nextStep = () => {
+    nextStep = async () => {
         if (this.state.button === results) {
             let winner;
             const currentScoreComputer = this.state.score.computer;
@@ -106,10 +38,15 @@ class GamePage extends Component {
 
             this.props.gameOver(winner, score);
         } else {
-            const currentComputerCardCode = this.state.decks.computer.splice(0, 1);
-            const currentUserCardCode = this.state.decks.user.splice(0, 1);
-            const currentComputerCard = this.checkCardValue(currentComputerCardCode);
-            const currentUserCard = this.checkCardValue(currentUserCardCode);
+            this.setState({
+                ...this.state,
+                loadingCards: true,
+            });
+            const currentDeckState = await Api.getNewCardPair(this.deck);
+            console.log(currentDeckState);
+            const [currentComputerCardCode, currentUserCardCode, remaining] = currentDeckState;
+            const currentComputerCard = Card.checkValue(currentComputerCardCode);
+            const currentUserCard = Card.checkValue(currentUserCardCode);
 
             let currentScoreComputer = this.state.score.computer;
             let currentScoreUser = this.state.score.user;
@@ -122,6 +59,7 @@ class GamePage extends Component {
 
             let result = {
                 ...this.state,
+                loadingCards: false,
                 currentCard: {
                     computer: currentComputerCardCode,
                     user: currentUserCardCode,
@@ -132,7 +70,7 @@ class GamePage extends Component {
                 },
             }
 
-            if (this.state.decks.computer.length === 0 || this.state.decks.user.length === 0) {
+            if (remaining === 0) {
                 result.button = results;
             }
 
@@ -144,20 +82,23 @@ class GamePage extends Component {
         return (
             <div className="game">
                 <h1 className="playerName">Computer: {this.state.score.computer}</h1>
-                <img className="card" src={require(`../img/${this.state.currentCard.computer}.png`)} alt={'card'}/>
-                <img className="card" src={require(`../img/${this.state.currentCard.user}.png`)} alt={'card'}/>
+                <img className="card" src={`https://deckofcardsapi.com/static/img/${this.state.currentCard.computer}.png`} alt={'card'}/>
+                <img className="card" src={`https://deckofcardsapi.com/static/img/${this.state.currentCard.user}.png`} alt={'card'}/>
                 <h1 className="playerName">{this.props.userName}: {this.state.score.user}</h1>
-                <button className="next-btn"
-                        onClick={this.nextStep}
-                >{this.state.button}
-                </button>
+                <div className={'div-btn'}>
+                    {this.state.loadingCards?'':
+                        <button className="next-btn"
+                                onClick={this.nextStep}
+                        >{this.state.button}
+                        </button>
+                    }
+                </div>
             </div>
         );
     }
 
-    componentDidMount() {
-        this.shuffleDeck();
-        this.divideDeck();
+    componentDidMount = async () => {
+        this.deck = await Api.getNewDeck();
     }
 }
 
