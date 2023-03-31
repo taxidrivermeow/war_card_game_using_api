@@ -1,32 +1,33 @@
-import React, {Component} from 'react';
+import React, {useEffect, useState} from 'react';
 import {results} from "../utils/constants";
 import Api from "../utils/Api";
 import Card from "../utils/Card";
 
-class GamePage extends Component {
-    constructor(props) {
-        super(props);
-        this.deck = ''
-        this.state = {
-            button: 'Next',
-            loadingCards: false,
-            score: {
-                computer: 0,
-                user: 0,
-            },
-            currentCard: {
-                computer: 'back',
-                user: 'back',
-            }
-        }
-    }
+const GamePage = (props) => {
+    const [deck, setDeck] = useState('');
+    const [button, setButton] = useState('Next');
+    const [loadingCards, setLoadingCards] = useState(false);
+    const [score, setScore] = useState({
+        computer: 0,
+        user: 0,
+    });
+    const [currentCard, setCurrentCard] = useState({
+        computer: 'back',
+        user: 'back',
+    });
 
-    nextStep = async () => {
-        if (this.state.button === results) {
+    useEffect(() => {
+        (async () => {
+            setDeck(await Api.getNewDeck());
+        })()
+    }, []);
+
+    const nextStep = async () => {
+        if (button === results) {
             let winner;
-            const currentScoreComputer = this.state.score.computer;
-            const currentScoreUser = this.state.score.user;
-            const score = `${currentScoreComputer} - ${currentScoreUser}`;
+            const currentScoreComputer = score.computer;
+            const currentScoreUser = score.user;
+            const lastScore = `${currentScoreComputer} - ${currentScoreUser}`;
 
             if (currentScoreUser > currentScoreComputer) {
                 winner = 'user';
@@ -36,19 +37,16 @@ class GamePage extends Component {
                 winner = 'draw'
             }
 
-            this.props.gameOver(winner, score);
+            props.gameOver(winner, lastScore);
         } else {
-            this.setState({
-                ...this.state,
-                loadingCards: true,
-            });
-            const currentDeckState = await Api.getNewCardPair(this.deck);
+            setLoadingCards(true);
+            const currentDeckState = await Api.getNewCardPair(deck);
             const [currentComputerCardCode, currentUserCardCode, remaining] = currentDeckState;
             const currentComputerCard = Card.checkValue(currentComputerCardCode);
             const currentUserCard = Card.checkValue(currentUserCardCode);
 
-            let currentScoreComputer = this.state.score.computer;
-            let currentScoreUser = this.state.score.user;
+            let currentScoreComputer = score.computer;
+            let currentScoreUser = score.user;
 
             if (currentComputerCard > currentUserCard) {
                 currentScoreComputer++;
@@ -56,49 +54,38 @@ class GamePage extends Component {
                 currentScoreUser++;
             }
 
-            let result = {
-                ...this.state,
-                loadingCards: false,
-                currentCard: {
-                    computer: currentComputerCardCode,
-                    user: currentUserCardCode,
-                },
-                score: {
-                    computer: currentScoreComputer,
-                    user: currentScoreUser,
-                },
-            }
+            setLoadingCards(false);
+            setCurrentCard({
+                computer: currentComputerCardCode,
+                user: currentUserCardCode,
+            });
+            setScore({
+                computer: currentScoreComputer,
+                user: currentScoreUser,
+            });
 
             if (remaining === 0) {
-                result.button = results;
+                setButton(results);
             }
-
-            this.setState(result);
         }
     }
 
-    render() {
-        return (
-            <div className="game">
-                <h1 className="playerName">Computer: {this.state.score.computer}</h1>
-                <img className="card" src={`https://deckofcardsapi.com/static/img/${this.state.currentCard.computer}.png`} alt={'card'}/>
-                <img className="card" src={`https://deckofcardsapi.com/static/img/${this.state.currentCard.user}.png`} alt={'card'}/>
-                <h1 className="playerName">{this.props.userName}: {this.state.score.user}</h1>
-                <div className={'div-btn'}>
-                    {this.state.loadingCards?'':
-                        <button className="next-btn"
-                                onClick={this.nextStep}
-                        >{this.state.button}
-                        </button>
-                    }
-                </div>
+    return (
+        <div className="game">
+            <h1 className="playerName">Computer: {score.computer}</h1>
+            <img className="card" src={`https://deckofcardsapi.com/static/img/${currentCard.computer}.png`} alt={'card'}/>
+            <img className="card" src={`https://deckofcardsapi.com/static/img/${currentCard.user}.png`} alt={'card'}/>
+            <h1 className="playerName">{props.userName}: {score.user}</h1>
+            <div className={'div-btn'}>
+                {loadingCards?'':
+                    <button className="next-btn"
+                            onClick={nextStep}
+                    >{button}
+                    </button>
+                }
             </div>
-        );
-    }
-
-    componentDidMount = async () => {
-        this.deck = await Api.getNewDeck();
-    }
-}
+        </div>
+    );
+};
 
 export default GamePage;
