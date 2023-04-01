@@ -25,21 +25,21 @@ const GamePage = (props) => {
     const nextStep = async () => {
         if (button === results) {
             let winner;
-            const currentScoreComputer = score.computer;
-            const currentScoreUser = score.user;
-            const lastScore = `${currentScoreComputer} - ${currentScoreUser}`;
-
-            if (currentScoreUser > currentScoreComputer) {
-                winner = 'user';
-            } else if (currentScoreUser < currentScoreComputer) {
-                winner = 'computer';
+            if (score.user > score.computer) {
+                winner = props.userName;
+            } else if (score.user < score.computer) {
+                winner = 'Computer';
             } else {
-                winner = 'draw'
+                winner = 'Draw'
             }
 
-            props.gameOver(winner, lastScore);
+            props.gameOver(winner, `${score.computer} - ${score.user}`);
         } else {
             setLoadingCards(true);
+            setCurrentCard({
+                computer: "back",
+                user: "back",
+            });
             const currentDeckState = await Api.getNewCardPair(deck);
             const [currentComputerCardCode, currentUserCardCode, remaining] = currentDeckState;
             const currentComputerCard = Card.checkValue(currentComputerCardCode);
